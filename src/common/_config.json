@@ -1,0 +1,6 @@
+{
+  "api": {
+    "domain": "..."
+  },
+  "remoteHotReload": true
+}
