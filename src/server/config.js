@@ -6,15 +6,15 @@ nconf.env('__');
 
 // For local development, we can override defaults easily. Rename
 // src/common/_config.json to src/common/config.json and uncomment next line.
-// nconf.file('src/common/config.json');
+nconf.file('src/common/config.json');
 
 // Remember, never put secrets in the source code. Use environment variables for
 // production or src/common/config.json for development instead.
 nconf.defaults({
   // appName: require('../../package.json').name,
   appName: 'app',
-  // Use appVersion defined in gulp env task or Heroku dyno metadata.
-  appVersion: process.env.appVersion || process.env.HEROKU_SLUG_COMMIT,
+  // Use appVersion defined in gulp env task
+  appVersion: process.env.appVersion,
   defaultLocale: 'en',
   api: {
     // To get the config, just click Add web app from the overview page.
