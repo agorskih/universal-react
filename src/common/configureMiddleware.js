@@ -1,10 +1,10 @@
+/* @flow weak */
 import configureStorage from './configureStorage';
 import createLoggerMiddleware from 'redux-logger';
 import errorToMessage from '../common/app/errorToMessage';
 
 // Deps.
 import { ApiClient } from './lib/redux-api';
-// import fetch from 'isomorphic-fetch';
 import validate from './validate';
 
 let apiDeps = null;
@@ -16,7 +16,7 @@ const injectMiddleware = deps => ({ dispatch, getState }) => next => action =>
     : action
   );
 
-// Like redux-promise-middleware but sane.
+// Like redux-promise-middleware but simpler.
 const promiseMiddleware = options => ({ dispatch }) => next => action => {
   const { shouldThrow } = options || {};
   const { payload } = action;
@@ -25,7 +25,8 @@ const promiseMiddleware = options => ({ dispatch }) => next => action => {
   const createAction = (suffix, payload) => ({
     type: `${action.type}_${suffix}`, meta: { action }, payload,
   });
-  // Note we don't return promise, because martinfowler.com/bliki/CQRS.html
+  // Note we don't return promise.
+  // github.com/este/este/issues/1091
   payload
     .then(value => dispatch(createAction('SUCCESS', value)))
     .catch(error => {
@@ -38,10 +39,13 @@ const promiseMiddleware = options => ({ dispatch }) => next => action => {
   return next(createAction('START'));
 };
 
-export default function configureMiddleware(initialState, platformDeps, platformMiddleware) {
+const configureMiddleware = (initialState, platformDeps, platformMiddleware) => {
+  // Lazy init.
   if (!apiDeps) {
+    apiDeps = {
+      api: new ApiClient(initialState.config.api),
+    };
     /*
-    // Lazy init.
     firebase.initializeApp(initialState.config.firebase);
     firebaseDeps = {
       firebase: firebase.database().ref(),
@@ -49,9 +53,6 @@ export default function configureMiddleware(initialState, platformDeps, platform
       firebaseDatabase: firebase.database,
     };
     */
-    apiDeps = {
-      api: new ApiClient(initialState.config.api),
-    };
   }
   // Check whether Firebase works.
   // firebaseDeps.firebase.child('hello-world').set({
@@ -65,12 +66,6 @@ export default function configureMiddleware(initialState, platformDeps, platform
     storageMiddleware,
   } = configureStorage(initialState, platformDeps.createStorageEngine);
 
-    /*
-    injectMiddleware({
-      ...platformDeps,
-      fetch,
-      ...apiDeps,
-      */
   const middleware = [
     injectMiddleware({
       ...platformDeps,
@@ -107,4 +102,6 @@ export default function configureMiddleware(initialState, platformDeps, platform
   }
 
   return middleware;
-}
+};
+
+export default configureMiddleware;

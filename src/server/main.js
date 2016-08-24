@@ -6,8 +6,6 @@ import frontend from './frontend';
 
 const app = express();
 
-app.disable('x-powered-by');
-
 app.use('/api/v1', api);
 app.use(frontend);
 app.use(errorHandler);

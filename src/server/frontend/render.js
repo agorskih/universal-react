@@ -1,5 +1,5 @@
 import Helmet from 'react-helmet';
-import Html from './Html.react';
+import Html from './Html';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import config from '../config';
@@ -78,7 +78,7 @@ const renderPage = (store, renderProps, req) => {
   return `<!DOCTYPE html>${docHtml}`;
 };
 
-export default function render(req, res, next) {
+const render = (req, res, next) => {
   const memoryHistory = createMemoryHistory(req.originalUrl);
   const store = configureStore({
     initialState: createRequestInitialState(req),
@@ -109,4 +109,6 @@ export default function render(req, res, next) {
       next(error);
     }
   });
-}
+};
+
+export default render;

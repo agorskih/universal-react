@@ -1,19 +1,22 @@
-import App from './app/App.react';
-import Fields from './fields/FieldsPage.react';
-import Api from './api/ApiPage.react';
-import Home from './home/HomePage.react';
-import Intl from './intl/IntlPage.react';
-import Me from './me/MePage.react';
-import NotFound from './notfound/NotFoundPage.react';
-import Offline from './offline/OfflinePage.react';
-import Profile from './me/ProfilePage.react';
+/* @flow weak */
 import React from 'react';
-import Settings from './me/SettingsPage.react';
-import SignIn from './auth/SignInPage.react';
-import Todos from './todos/TodosPage.react';
 import { IndexRoute, Route } from 'react-router';
 
-export default function createRoutes(getState) {
+// Router components must be ES6 classes because hot reloading.
+import App from './app/App';
+import Fields from './fields/FieldsPage';
+import Api from './api/ApiPage';
+import Home from './home/HomePage';
+import Intl from './intl/IntlPage';
+import Me from './me/MePage';
+import NotFound from './notfound/NotFoundPage';
+import Offline from './offline/OfflinePage';
+import Profile from './me/ProfilePage';
+import Settings from './me/SettingsPage';
+import SignIn from './auth/SignInPage';
+import Todos from './todos/TodosPage';
+
+const createRoutes = (getState) => {
   const requireViewer = (nextState, replace) => {
     if (getState().users.viewer) return;
     replace({
@@ -38,4 +41,6 @@ export default function createRoutes(getState) {
       <Route component={NotFound} path="*" />
     </Route>
   );
-}
+};
+
+export default createRoutes;

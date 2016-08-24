@@ -1,5 +1,6 @@
+/* @flow weak */
 import Raven from 'raven-js';
-import { apiActions } from './lib/redux-api';
+import { firebaseActions } from './lib/redux-firebase';
 
 // bluebirdjs.com/docs/api/error-management-configuration.html#global-rejection-events
 const register = unhandledRejection => unhandledRejection(event => {
@@ -30,14 +31,14 @@ const setRavenUserContext = user => {
 };
 
 const reportingMiddleware = () => next => action => {
-  if (action.type === apiActions.API_ON_AUTH) {
+  if (action.type === firebaseActions.FIREBASE_ON_AUTH) {
     setRavenUserContext(action.payload.user);
   }
   // TODO: Use Raven.setExtraContext for last 10 actions and limited app state.
   return next(action);
 };
 
-export default function configureReporting(options) {
+const configureReporting = (options) => {
   const { appVersion, sentryUrl, unhandledRejection } = options;
   Raven.config(sentryUrl, {
     // gist.github.com/impressiver/5092952
@@ -85,4 +86,6 @@ export default function configureReporting(options) {
   }).install();
   register(unhandledRejection);
   return reportingMiddleware;
-}
+};
+
+export default configureReporting;

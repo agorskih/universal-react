@@ -1,4 +1,4 @@
-import * as actions from './actions';
+/* @flow weak */
 import { Record } from '../transit';
 import { apiActions } from '../lib/redux-api';
 
@@ -8,10 +8,9 @@ const State = Record({
   success: null, // To get accessToken, refreshToken, whatever.
 }, 'auth');
 
-export default function authReducer(state = new State, action) {
+const authReducer = (state = new State(), action) => {
   switch (action.type) {
 
-    case actions.SIGN_IN_START:
     case apiActions.API_RESET_PASSWORD_START:
     case apiActions.API_SIGN_IN_START:
     case apiActions.API_SIGN_UP_START: {
@@ -19,7 +18,6 @@ export default function authReducer(state = new State, action) {
         .set('formDisabled', true);
     }
 
-    case actions.SIGN_IN_ERROR:
     case apiActions.API_RESET_PASSWORD_ERROR:
     case apiActions.API_SIGN_IN_ERROR:
     case apiActions.API_SIGN_UP_ERROR: {
@@ -28,7 +26,6 @@ export default function authReducer(state = new State, action) {
         .set('error', action.payload);
     }
 
-    case actions.SIGN_IN_SUCCESS:
     case apiActions.API_RESET_PASSWORD_SUCCESS:
     case apiActions.API_SIGN_IN_SUCCESS:
     case apiActions.API_SIGN_UP_SUCCESS: {
@@ -38,7 +35,10 @@ export default function authReducer(state = new State, action) {
         .set('success', action.payload);
     }
 
-  }
+    default:
+      return state;
 
-  return state;
-}
+  }
+};
+
+export default authReducer;

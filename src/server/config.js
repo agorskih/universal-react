@@ -11,7 +11,6 @@ nconf.file('src/common/config.json');
 // Remember, never put secrets in the source code. Use environment variables for
 // production or src/common/config.json for development instead.
 nconf.defaults({
-  // appName: require('../../package.json').name,
   appName: 'app',
   // Use appVersion defined in gulp env task
   appVersion: process.env.appVersion,

@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
 import invariant from 'invariant';
 import { resetFields, setField } from './actions';
 
@@ -7,7 +7,7 @@ const isReactNative =
   navigator.product === 'ReactNative'; // eslint-disable-line no-undef
 
 // Higher order component for huge fast dynamic deeply nested universal forms.
-export default function fields(WrappedComponent, options) {
+const fields = (WrappedComponent, options) => {
   const {
     path = '',
     fields = [],
@@ -21,10 +21,10 @@ export default function fields(WrappedComponent, options) {
     Array.isArray(path)
   , 'Path must be a string, function, or an array.');
 
-  return class Fields extends Component {
+  return class Fields extends React.Component {
 
     static contextTypes = {
-      store: PropTypes.object, // Redux store.
+      store: React.PropTypes.object, // Redux store.
     };
 
     static getNormalizePath(props) {
@@ -141,4 +141,6 @@ export default function fields(WrappedComponent, options) {
     }
 
   };
-}
+};
+
+export default fields;

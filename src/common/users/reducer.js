@@ -1,5 +1,5 @@
+/* @flow weak */
 import * as actions from './actions';
-import * as authActions from '../auth/actions';
 import User from './user';
 import { Record } from '../transit';
 import { Seq } from 'immutable';
@@ -11,7 +11,7 @@ const State = Record({
   viewer: null,
 }, 'users');
 
-export default function usersReducer(state = new State, action) {
+const usersReducer = (state = new State(), action) => {
   switch (action.type) {
 
     case apiActions.API_ON_AUTH: {
@@ -19,7 +19,7 @@ export default function usersReducer(state = new State, action) {
       return state.set('viewer', user);
     }
 
-    case authActions.SIGN_IN_SUCCESS: {
+    case apiActions.SIGN_IN_SUCCESS: {
       const { email, id } = action.payload;
       const user = new User({ email, id });
       return state.set('viewer', user);
@@ -41,7 +41,10 @@ export default function usersReducer(state = new State, action) {
         .set('onlineLoaded', true);
     }
 
-  }
+    default:
+      return state;
 
-  return state;
-}
+  }
+};
+
+export default usersReducer;

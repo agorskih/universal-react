@@ -1,3 +1,4 @@
+/* @flow weak */
 import * as actions from './actions';
 import Todo from './todo';
 import { Map } from 'immutable';
@@ -7,7 +8,7 @@ const State = Record({
   map: Map(),
 }, 'todos');
 
-export default function todosReducer(state = new State, action) {
+const todosReducer = (state = new State(), action) => {
   switch (action.type) {
 
     case actions.ADD_HUNDRED_TODOS: {
@@ -40,7 +41,10 @@ export default function todosReducer(state = new State, action) {
       return state.updateIn(['map', todo.id, 'completed'], value => !value);
     }
 
-  }
+    default:
+      return state;
 
-  return state;
-}
+  }
+};
+
+export default todosReducer;

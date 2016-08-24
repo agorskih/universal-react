@@ -4,6 +4,7 @@ import render from './render';
 
 const app = express();
 
+app.disable('x-powered-by');
 app.use(compression());
 
 // Note we don't need serve-favicon middleware, it doesn't work with static

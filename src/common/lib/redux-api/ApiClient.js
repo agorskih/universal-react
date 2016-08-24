@@ -1,3 +1,5 @@
+import fetch from 'isomorphic-fetch';
+
 export default class ApiClient {
   constructor(json) {
     this.domain = json.domain;
