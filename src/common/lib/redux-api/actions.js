@@ -1,3 +1,4 @@
+/* @flow */
 import invariant from 'invariant';
 import mapApiUserToAppUser from './mapApiUserToAppUser';
 import messages from './messages';
@@ -152,8 +153,8 @@ const createPresenceMonitor = () => {
 };
 */
 
-export function signIn(providerName, fields) {
-  return ({ api, validate }) => {
+export const signIn = (providerName: string, fields: Object) =>
+  ({ api, validate }: any) => {
     const promise = providerName === 'password'
       ? emailSignIn(api, validate, fields)
       : socialSignIn(api, providerName);
@@ -163,17 +164,16 @@ export function signIn(providerName, fields) {
       meta: { providerName, fields },
     };
   };
-}
 
-export function nativeSignIn(providerName) {
-  return ({ FBSDK: { AccessToken, LoginManager }, api }) => {
+export const nativeSignIn = (providerName: string) =>
+  ({ FBSDK: { AccessToken, LoginManager }, api }: any) => {
     invariant(providerName === 'spacebook',
      `${providerName} provider is not yet supported in nativeSignIn.`);
     const getPromise = async () => {
       const result = await LoginManager.logInWithReadPermissions(facebookPermissions);
       if (result.isCancelled) {
         // Mimic Firebase error to have the same universal API.
-        const error = new Error('auth/popup-closed-by-user');
+        const error: any = new Error('auth/popup-closed-by-user');
         error.code = 'auth/popup-closed-by-user';
         throw error;
       }
@@ -187,10 +187,9 @@ export function nativeSignIn(providerName) {
       payload: getPromise(),
     };
   };
-}
 
-export function signUp(providerName, fields) {
-  return ({ api, validate }) => {
+export const signUp = (providerName: string, fields: Object) =>
+  ({ api, validate }: any) => {
     const getPromise = async () => {
       invariant(providerName === 'password',
        `${providerName} provider is not supported.`);
@@ -210,17 +209,14 @@ export function signUp(providerName, fields) {
       payload: getPromise(),
     };
   };
-}
 
-export function onPermissionDenied(message) {
-  return {
-    type: API_ON_PERMISSION_DENIED,
-    payload: { message },
-  };
-}
+export const onPermissionDenied = (message: string) => ({
+  type: FIREBASE_ON_PERMISSION_DENIED,
+  payload: { message },
+});
 
-export function resetPassword(email, onSuccess) {
-  return ({ api, validate }) => {
+export const resetPassword = (email: string, onSuccess: Function) =>
+  ({ api, validate }: any) => {
     const getPromise = async () => {
       await validate({ email })
         .prop('email')
@@ -244,8 +240,8 @@ export function resetPassword(email, onSuccess) {
   };
 }
 
-export function oldsignin(fields) {
-  return ({ api, validate }) => {
+export const oldsignin = (fields) => {
+  ({ api, validate }: any) => {
     const getPromise = async () => {
       try {
         // Validate fields async.
@@ -288,15 +284,15 @@ export function oldsignin(fields) {
   };
 }
 
-export function apiStart() {
+export const apiStart = () => {
   // const monitorPresence = createPresenceMonitor();
 
-  return ({ dispatch, api, getState }) => {
-    // sign in with api credentials in config
-    // dispatch api sign in success/error
-    // resule.credential = firebase.auth.AuthCredential contains fb access token
-    console.log('apistart');
-    /*
+  return (deps: any) => {
+    const {
+      dispatch,
+      api,
+      getState,
+    } = deps;
     api.getRedirectResult().then(result => {
       if (!result.credential) return;
       dispatch({ type: API_SIGN_IN_SUCCESS, payload: result });
@@ -307,24 +303,20 @@ export function apiStart() {
       dispatch({ type: API_SIGN_IN_ERROR, payload: error });
     });
 
-    // get app user from api user
-    // dispatch api onAuth
     api.onAuthStateChanged(apiUser => {
       const user = mapApiUserToAppUser(apiUser);
       // monitorPresence(firebase, firebaseDatabase, user);
       dispatch(onAuth(user));
     });
 
-    // when connected value changes, dispath app online/offline
-    api.child('.info/connected').on('value', snap => {
+    firebase.child('.info/connected').on('value', snap => {
       const online = snap.val();
       if (getState().app.online === online) return;
       dispatch({ type: online ? APP_ONLINE : APP_OFFLINE });
     });
-    */
 
     return {
       type: API_START,
     };
   };
-}
+};

@@ -1,3 +1,4 @@
+/* @flow weak */
 // A higher order component for Firebase queries without on / off madness.
 
 // Example:
@@ -18,7 +19,7 @@
 // }));
 
 import * as actions from './actions';
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
 
 // Use key whenever you want to force off / on event registration. It's useful
 // when queried component must be rerendered, for example when app state is
@@ -29,12 +30,17 @@ const optionsToPayloadString = options => JSON.stringify(optionsToPayload(option
 let serverFetching = false;
 let serverFetchingPromises = null;
 
-export default function queryApi(WrappedComponent, mapPropsToOptions) {
-  return class ApiQuery extends Component {
+const queryApi = (WrappedComponent, mapPropsToOptions) =>
+  class ApiQuery extends React.Component {
 
     static contextTypes = {
-      store: PropTypes.object, // Redux store.
+      store: React.PropTypes.object, // Redux store.
     };
+
+    _onAllValueCalled: boolean;
+    onArgs: any;
+    onceArgs: any;
+
 
     ensureCancelCallback(callbackOrCallbackWithCancelCallback) {
       const callbacks = [].concat(callbackOrCallbackWithCancelCallback);
@@ -172,7 +178,8 @@ export default function queryApi(WrappedComponent, mapPropsToOptions) {
     }
 
   };
-}
+
+export default queryApi;
 
 // queryFirebaseServer is for server side data fetching. Example:
 // await queryFirebaseServer(() => {

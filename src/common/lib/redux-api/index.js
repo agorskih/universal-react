@@ -1,3 +1,4 @@
+/* @flow */
 import * as apiActions from './actions';
 import ApiClient from './ApiClient';
 import apiMessages from './messages';

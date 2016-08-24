@@ -1,16 +1,12 @@
+/* @flow weak */
 // Helper for updating immutable List by all Firebase events.
 
 import { List } from 'immutable';
 
-export default function updateList(
-  list,
-  ItemRecord,
-  idProp,
-  args
-) {
+const updateList = (list, ItemRecord, idProp, args) => {
   const { eventType, key, prevChildKey, val } = args;
   const findIndex = id => list.findIndex(item => item[idProp] === id);
-  const getInsertIndex = () => prevChildKey ? findIndex(prevChildKey) + 1 : 0;
+  const getInsertIndex = () => (prevChildKey ? findIndex(prevChildKey) + 1 : 0);
   // TODO: Firebase ensures consistency, so maybe we don't need if checks with
   // once value approach.
   switch (eventType) {
@@ -37,6 +33,9 @@ export default function updateList(
     case 'value': {
       return List(val).map(item => new ItemRecord(item));
     }
+    default:
+      return list;
   }
-  return list;
-}
+};
+
+export default updateList;
