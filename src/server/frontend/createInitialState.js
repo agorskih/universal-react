@@ -11,7 +11,7 @@ const createInitialState = () => ({
   config: configReducer(undefined, {})
     .set('appName', config.appName)
     .set('appVersion', config.appVersion)
-    .set('firebase', config.firebase)
+    .set('api', config.api)
     .set('sentryUrl', config.sentryUrl),
   device: deviceReducer(undefined, {}),
   intl: intlReducer(undefined, {})

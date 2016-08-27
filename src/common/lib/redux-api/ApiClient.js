@@ -25,10 +25,16 @@ export default class ApiClient {
       const online = snap.val();
       */
 
-  signInWithEmailAndPassword(email, password) {
-    console.log(`email=${email}`);
-    console.log(`pass=${password}`);
-    return Promise.resolve();
+  async signInEmailPassword(email, password) {
+    const response = await fetch('http://localhost:3001/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    if (response.status !== 200) {
+      throw await response.json();
+    }
+    return response.json();
   }
 
   signInWithRedirect(provider) {

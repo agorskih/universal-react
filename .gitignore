@@ -32,6 +32,7 @@ node_modules/
 npm-debug.log
 project.xcworkspace
 src/common/config.json
+api/config.json
 src/native/initialState.js
 webpack-assets.json
 xcuserdata

@@ -1,4 +1,5 @@
 /* @flow */
+import fetch from 'isomorphic-fetch';
 import invariant from 'invariant';
 import mapApiUserToAppUser from './mapApiUserToAppUser';
 import messages from './messages';
@@ -53,7 +54,7 @@ const mapApiErrorToAppValidationError = code => {
 const emailSignIn = async (api, validate, { email, password }) => {
   await validateEmailAndPassword(validate, { email, password });
   try {
-    return await api.signInWithEmailAndPassword(email, password);
+    return await api.signInEmailPassword(email, password);
   } catch (error) {
     if (messages[error.code]) {
       throw mapApiErrorToAppValidationError(error.code);
@@ -61,6 +62,51 @@ const emailSignIn = async (api, validate, { email, password }) => {
     throw error;
   }
 };
+/*
+export const oldSignIn = (fields: Object) => {
+  return ({ api, validate }: any) => {
+    const getPromise = async () => {
+      try {
+        // Validate fields async.
+        await validate(fields)
+          .prop('email')
+            .required()
+            .email()
+          .prop('password')
+            .required()
+            .simplePassword()
+          .promise;
+        // Simulate response for server-less (Firebase hosting) example.
+        if (process.env.IS_SERVERLESS) {
+          return {
+            email: fields.email,
+            id: Date.now(),
+          };
+        }
+        // Naive API fetch example.
+        const response = await fetch('/api/v1/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(fields),
+        });
+        if (response.status !== 200) throw response;
+        return response.json();
+      } catch (error) {
+        // HTTP status to ValidationError.
+        if (error.status === 401) {
+          throw new ValidationError('wrongPassword', { prop: 'password' });
+        }
+        throw error;
+      }
+    };
+
+    return {
+      type: 'SIGN_IN',
+      payload: getPromise(),
+    };
+  };
+};
+*/
 
 // stackoverflow.com/a/33997042/233902
 const isFacebookApp = () => {
@@ -211,7 +257,7 @@ export const signUp = (providerName: string, fields: Object) =>
   };
 
 export const onPermissionDenied = (message: string) => ({
-  type: FIREBASE_ON_PERMISSION_DENIED,
+  type: API_ON_PERMISSION_DENIED,
   payload: { message },
 });
 
@@ -238,51 +284,6 @@ export const resetPassword = (email: string, onSuccess: Function) =>
       payload: getPromise(),
     };
   };
-}
-
-export const oldsignin = (fields) => {
-  ({ api, validate }: any) => {
-    const getPromise = async () => {
-      try {
-        // Validate fields async.
-        await validate(fields)
-          .prop('email')
-            .required()
-            .email()
-          .prop('password')
-            .required()
-            .simplePassword()
-          .promise;
-        // Simulate response for server-less (Firebase hosting) example.
-        if (process.env.IS_SERVERLESS) {
-          return {
-            email: fields.email,
-            id: Date.now(),
-          };
-        }
-        // Naive API fetch example.
-        const response = await fetch('/api/v1/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(fields),
-        });
-        if (response.status !== 200) throw response;
-        return response.json();
-      } catch (error) {
-        // HTTP status to ValidationError.
-        if (error.status === 401) {
-          throw new ValidationError('wrongPassword', { prop: 'password' });
-        }
-        throw error;
-      }
-    };
-
-    return {
-      type: 'SIGN_IN',
-      payload: getPromise(),
-    };
-  };
-}
 
 export const apiStart = () => {
   // const monitorPresence = createPresenceMonitor();
@@ -293,6 +294,7 @@ export const apiStart = () => {
       api,
       getState,
     } = deps;
+    /*
     api.getRedirectResult().then(result => {
       if (!result.credential) return;
       dispatch({ type: API_SIGN_IN_SUCCESS, payload: result });
@@ -305,15 +307,16 @@ export const apiStart = () => {
 
     api.onAuthStateChanged(apiUser => {
       const user = mapApiUserToAppUser(apiUser);
-      // monitorPresence(firebase, firebaseDatabase, user);
+      // monitorPresence(api, firebaseDatabase, user);
       dispatch(onAuth(user));
     });
 
-    firebase.child('.info/connected').on('value', snap => {
+    api.child('.info/connected').on('value', snap => {
       const online = snap.val();
       if (getState().app.online === online) return;
       dispatch({ type: online ? APP_ONLINE : APP_OFFLINE });
     });
+    */
 
     return {
       type: API_START,
